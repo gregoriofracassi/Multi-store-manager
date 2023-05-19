@@ -17,6 +17,7 @@ const GetData = () => {
     setResponseData("loading...");
     const res = await fetch("/api"); //fetch instance of useFetch()
     const { text } = await res.json();
+    console.log('trying to get shit')
     setResponseData(text);
   }
   async function fetchContentPost() {
