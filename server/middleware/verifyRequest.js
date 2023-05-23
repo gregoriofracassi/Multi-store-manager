@@ -16,6 +16,7 @@ const verifyRequest = async (req, res, next) => {
       rawRequest: req,
       rawResponse: res,
     });
+    console.log({ amigettingsessionid: sessionId});
 
     const session = await sessionHandler.loadSession(sessionId);
 
@@ -27,6 +28,7 @@ const verifyRequest = async (req, res, next) => {
         "Content-Security-Policy",
         `frame-ancestors https://${session.shop} https://admin.shopify.com;`
       );
+      req.session = session
       return next();
     }
 

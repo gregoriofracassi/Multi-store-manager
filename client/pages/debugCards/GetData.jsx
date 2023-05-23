@@ -15,7 +15,7 @@ const GetData = () => {
 
   async function fetchContent() {
     setResponseData("loading...");
-    const res = await fetch("/api"); //fetch instance of useFetch()
+    const res = await fetch("/apipaperone"); //fetch instance of useFetch()
     const { text } = await res.json();
     console.log('trying to get shit')
     setResponseData(text);
@@ -43,11 +43,11 @@ const GetData = () => {
     setResponseDataGQL(response.body.data.shop.name);
   }
 
-  useEffect(() => {
-    fetchContent();
-    fetchContentPost();
-    fetchContentGQL();
-  }, []);
+  // useEffect(() => {
+  //   fetchContent();
+  //   fetchContentPost();
+  //   fetchContentGQL();
+  // }, []);
 
   return (
     <Page
