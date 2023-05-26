@@ -17,22 +17,21 @@ export const uploadProduct = async (req, res, newProduct, customSession) => {
    return product
 }
 
-export const getProduct = async (req, res, customSession, productId) => {
+export const getProduct = async (req, res) => {
    const { client } = await clientProvider.restClient({
       req,
       res,
-      isOnline: false,
-      customSession
+      isOnline: false
    })
    const product = await client.get({
-      path: `products/${productId}`
+      path: `products/${req.params.product_id}`
    })
    console.log({ product })
    if (!product) createHttpError(404, 'No product with this id')
    return product
 }
 
-export const putProduct = async (req, res) => {
+export const putProduct = async (req, res, customSession, productId) => {
    // body example:
    // product: {
    //    title: 'whatever'
@@ -40,10 +39,11 @@ export const putProduct = async (req, res) => {
    const { client } = await clientProvider.restClient({
       req,
       res,
-      isOnline: false
+      isOnline: false,
+      customSession
    })
    const product = await client.put({
-      path: `products/${req.params.product_id}`,
+      path: `products/${productId}`,
       data: req.body
    })
    console.log({ product })

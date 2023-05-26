@@ -83,8 +83,6 @@ productsRouter.post('/by_tag/:product_id', async (req, res) => {
 productsRouter.put('/by_tag/:product_id', async (req, res) => {
    try {
       console.log('in the route')
-      const product = await getProduct(req, res)
-
       const multiStorePd = await MultiStoreProductModel.find({
          shopify_ids: {
             $elemMatch: {
@@ -103,7 +101,6 @@ productsRouter.put('/by_tag/:product_id', async (req, res) => {
          console.log({ modified })
       }
 
-      delete product.id
       const updatedMultiStore = MultiStoreProductModel.findByIdAndUpdate(multiStorePd._id, req.body, {
          runValidators: true,
          new: true
