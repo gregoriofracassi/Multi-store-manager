@@ -36,6 +36,7 @@
     "@shopify/polaris": "^10.49.1",
     "@shopify/shopify-api": "^7.2.0",
     "axios": "^1.4.0",
+    "chalk": "^5.2.0",
     "compression": "^1.7.4",
     "cryptr": "^6.2.0",
     "dotenv": "^16.0.3",

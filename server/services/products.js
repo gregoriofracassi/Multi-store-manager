@@ -26,7 +26,6 @@ export const getProduct = async (req, res) => {
    const product = await client.get({
       path: `products/${req.params.product_id}`
    })
-   console.log({ product })
    if (!product) createHttpError(404, 'No product with this id')
    return product
 }
@@ -46,7 +45,6 @@ export const putProduct = async (req, res, customSession, productId) => {
       path: `products/${productId}`,
       data: req.body
    })
-   console.log({ product })
    if (!product) createHttpError(404, 'No product with this id')
    return product
 }

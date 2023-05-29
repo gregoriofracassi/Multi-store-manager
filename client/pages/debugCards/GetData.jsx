@@ -15,14 +15,14 @@ const GetData = () => {
 
    async function fetchContent() {
       setResponseData('loading...');
-      const res = await fetch('/stores/by_tag/8343349952814'); //fetch instance of useFetch()
+      const res = await fetch('/stores/by_tag/8331824988482'); //fetch instance of useFetch()
       const text = await res.json();
       setResponseData('ciaociao');
    }
    async function fetchContentPost() {
       setResponseDataPost('loading...');
       const postBody = JSON.stringify({ tags: ['pane'] });
-      const res = await fetch('/products/by_tag/8343349952814', {
+      const res = await fetch('/products/by_tag/8331824988482', {
          headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json'
