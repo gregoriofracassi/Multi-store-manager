@@ -1,20 +1,20 @@
-import shopify from "./shopifyConfig.js";
+import shopify from "./shopifyConfig.js"
 
 const authRedirect = async (req, res) => {
   if (!req.query.shop) {
-    res.status(500);
-    return res.send("No shop provided");
+    res.status(500)
+    return res.send("No shop provided")
   }
 
   if (req.query.embedded === "1") {
-    const shop = shopify.utils.sanitizeShop(req.query.shop);
+    const shop = shopify.utils.sanitizeShop(req.query.shop)
     const queryParams = new URLSearchParams({
       ...req.query,
       shop,
       redirectUri: `https://${shopify.config.hostName}/auth?shop=${shop}&host=${req.query.host}`,
-    }).toString();
+    }).toString()
 
-    return res.redirect(`/exitframe?${queryParams}`);
+    return res.redirect(`/exitframe?${queryParams}`)
   }
 
   return await shopify.auth.begin({
@@ -23,7 +23,7 @@ const authRedirect = async (req, res) => {
     isOnline: false,
     rawRequest: req,
     rawResponse: res,
-  });
-};
+  })
+}
 
-export default authRedirect;
+export default authRedirect
