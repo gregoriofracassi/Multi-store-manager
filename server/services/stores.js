@@ -4,7 +4,15 @@ import SessionModel from '../../utils/models/SessionModel.js'
 import createHttpError from 'http-errors'
 import chalk from 'chalk'
 
-export const getStoresFromTag = async (req, res) => {
+function cutStringUpToDotCom(str) {
+   const dotComIndex = str.indexOf('.com')
+   if (dotComIndex !== -1) {
+      return str.substring(0, dotComIndex + 4)
+   }
+   return str
+}
+
+export const getStoresFromTag = async (req, res, exceptStores = []) => {
    console.log(chalk.blue('getting stores form product tags...'))
    const { client } = await clientProvider.restClient({
       req,
@@ -20,7 +28,35 @@ export const getStoresFromTag = async (req, res) => {
          $in: productTags
       }
    })
-   return stores
+   const result = { toAdd: [], toDelete: [], byTag: stores}
+   if (exceptStores && exceptStores.length) {
+      const combinedStores = [
+         ...stores.map((st) => {
+            return { store: st, from: 'new' }
+         }),
+         ...exceptStores.map((st) => {
+            return { store: st, from: 'existing' }
+         })
+      ]
+      const resultArr = Object.values(
+         combinedStores.reduce((acc, val) => {
+            if (!acc[val.store._id.toString()]) {
+               acc[val.store._id.toString()] = { store: val.store, count: 1, from: val.from }
+            } else {
+               acc[val.store._id.toString()].count++
+            }
+            return acc
+         }, {})
+      )
+      resultArr.forEach((el) => {
+         if (el.count < 2) {
+            el.from === 'existing' ? result.toDelete.push(el.store) : result.toAdd.push(el.store)
+         }
+      })
+      return result
+   }
+   result.toAdd = stores
+   return result
 }
 
 export const getSessionsFromStores = async (req, res, storeArr = [], options) => {
@@ -46,5 +82,17 @@ export const getSessionsFromStores = async (req, res, storeArr = [], options) =>
       return mappedSessions
    } catch (error) {
       createHttpError(500, 'Server error')
+   }
+}
+
+export const getCurrentStore = async (req, res) => {
+   try {
+      const { sessionId } = req
+      const store = await StoreModel.findOne({
+         shop: cutStringUpToDotCom(sessionId)
+      })
+      return store
+   } catch (error) {
+      console.log(chalk.red('Cannot find store with current session id'))
    }
 }
