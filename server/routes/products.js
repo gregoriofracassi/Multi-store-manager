@@ -59,7 +59,10 @@ productsRouter.post('/multistore/:product_id', async (req, res) => {
       const tempProduct = { title: 'calamaro' }
 
       const stores = await getStoresFromTag(req, res, existingInStores)
-      const sessionStoresToAdd = await getSessionsFromStores(req, res, stores.toAdd, { online: true })
+      const sessionStoresToAdd = await getSessionsFromStores(req, res, stores.toAdd, {
+         online: true,
+         noCurrent: true
+      })
       const sessionStoresToDelete = await getSessionsFromStores(req, res, stores.toDelete, { online: true })
 
       if (sessionStoresToDelete.length || sessionStoresToAdd.length) {
@@ -80,18 +83,17 @@ productsRouter.post('/multistore/:product_id', async (req, res) => {
             await deleteProduct(req, res, shopifyData.id, loadedSession)
             deletedProducts.push({ id: shopifyData.id, store: sessionObj.store._id })
          }
-         // delete products
 
-         console.log(chalk.blue('creating/updating multiStore product...'))
          const responseObj = {}
 
          if (!multiStorePd) {
             const isCurrentActive = async () => {
                const currentStore = await getCurrentStore(req, res)
                const deletedStoresIds = sessionStoresToDelete.map((sesSt) => sesSt.store._id.toString())
-               return deletedStoresIds.includes(currentStore._id.toString()) ? currentStore._id : false
+               return deletedStoresIds.includes(currentStore._id.toString()) ? false : currentStore._id
             }
             const current = await isCurrentActive()
+            console.log(chalk.blue('adding multistore product...'))
             const newMultiStorePd = new MultiStoreProductModel({
                product: product.body.product,
                shopifyData: current
@@ -100,6 +102,7 @@ productsRouter.post('/multistore/:product_id', async (req, res) => {
             })
             responseObj.saved = await newMultiStorePd.save()
          } else {
+            console.log(chalk.blue('updating multistore product....'))
             if (uploadedProducts.length) {
                responseObj.updatedMultiProduct = await MultiStoreProductModel.findOneAndUpdate(
                   { _id: multiStorePd._id },
@@ -108,19 +111,20 @@ productsRouter.post('/multistore/:product_id', async (req, res) => {
                         shopifyData: { $each: uploadedProducts }
                      }
                   },
-                  { new: true }
+                  { new: true, runValidators: true }
                )
             }
             if (deletedProducts.length) {
                const toDelete = deletedProducts.map((pro) => pro.id)
+               console.log({ toDelete })
                responseObj.deleteMultiProduct = await MultiStoreProductModel.findOneAndUpdate(
-                  ({ _id: multiStorePd._id },
+                  { _id: multiStorePd._id },
                   {
                      $pull: {
                         shopifyData: { id: { $in: toDelete } }
                      }
                   },
-                  { new: true })
+                  { new: true, runValidators: true }
                )
             }
          }
