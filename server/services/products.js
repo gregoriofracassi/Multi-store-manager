@@ -1,20 +1,42 @@
 import clientProvider from '../../utils/clientProvider.js'
 import { DataType } from '@shopify/shopify-api'
+import chalk from 'chalk'
 
 export const uploadProduct = async (req, res, newProduct, customSession) => {
-   const { client } = await clientProvider.restClient({
-      req,
-      res,
-      isOnline: false,
-      customSession
-   })
-   const body = { product: newProduct }
-   const product = await client.post({
-      path: 'products',
-      data: body,
-      type: DataType.JSON
-   })
-   return product
+   try {
+      const { client } = await clientProvider.restClient({
+         req,
+         res,
+         isOnline: false,
+         customSession
+      })
+      const body = { product: newProduct }
+      const product = await client.post({
+         path: 'products',
+         data: body,
+         type: DataType.JSON
+      })
+      return product
+   } catch (error) {
+      console.log(chalk.red(error))
+   }
+}
+
+export const deleteProduct = async (req, res, productId, customSession) => {
+   try {
+      const { client } = await clientProvider.restClient({
+         req,
+         res,
+         isOnline: false,
+         customSession
+      })
+      const product = await client.delete({
+         path: `products/${productId}`
+      })
+      return product
+   } catch (error) {
+      console.log(chalk.red(error))
+   }
 }
 
 export const getProduct = async (req, res) => {
