@@ -1,45 +1,45 @@
-import { useAppBridge } from '@shopify/app-bridge-react';
-import { Redirect } from '@shopify/app-bridge/actions';
-import { Layout, LegacyCard, Link, Page } from '@shopify/polaris';
-import { navigate } from 'raviger';
-import React, { useEffect, useState } from 'react';
-import useFetch from '../../hooks/useFetch';
+import { useAppBridge } from '@shopify/app-bridge-react'
+import { Redirect } from '@shopify/app-bridge/actions'
+import { Layout, LegacyCard, Link, Page } from '@shopify/polaris'
+import { navigate } from 'raviger'
+import React, { useEffect, useState } from 'react'
+import useFetch from '../../hooks/useFetch'
 
 const GetData = () => {
-   const app = useAppBridge();
-   const redirect = Redirect.create(app);
-   const [responseData, setResponseData] = useState('');
-   const [responseDataPost, setResponseDataPost] = useState('');
-   const [responseDataGQL, setResponseDataGQL] = useState('');
-   const fetch = useFetch();
+   const app = useAppBridge()
+   const redirect = Redirect.create(app)
+   const [responseData, setResponseData] = useState('')
+   const [responseDataPost, setResponseDataPost] = useState('')
+   const [responseDataGQL, setResponseDataGQL] = useState('')
+   const fetch = useFetch()
 
    async function fetchContent() {
-      setResponseData('loading...');
-      const res = await fetch('/stores/by_tag/8331824628034'); //fetch instance of useFetch()
-      const text = await res.json();
-      setResponseData('ciaociao');
+      setResponseData('loading...')
+      const res = await fetch('/stores/by_tag/8336963502382') //fetch instance of useFetch()
+      const text = await res.json()
+      setResponseData('ciaociao')
    }
    async function fetchContentPost() {
-      setResponseDataPost('loading...');
-      const postBody = JSON.stringify({ tags: ['pane'] });
-      const res = await fetch('/products/multistore/8331824628034', {
+      setResponseDataPost('loading...')
+      const postBody = JSON.stringify({ title: 'caefoaj' })
+      const res = await fetch('/products/multistore/8336963502382', {
          headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json'
          },
-         method: 'POST',
+         method: 'PUT',
          body: postBody
-      }); //fetch instance of useFetch()
+      }) //fetch instance of useFetch()
 
-      const { content } = await res.json();
-      setResponseDataPost(content);
+      const { content } = await res.json()
+      setResponseDataPost(content)
    }
 
    async function fetchContentGQL() {
-      setResponseDataGQL('loading...');
-      const res = await fetch('/api/gql'); //fetch instance of useFetch()
-      const response = await res.json();
-      setResponseDataGQL(response.body.data.shop.name);
+      setResponseDataGQL('loading...')
+      const res = await fetch('/api/gql') //fetch instance of useFetch()
+      const response = await res.json()
+      setResponseDataGQL(response.body.data.shop.name)
    }
 
    // useEffect(() => {
@@ -49,10 +49,7 @@ const GetData = () => {
    // }, []);
 
    return (
-      <Page
-         title="Data Fetching"
-         breadcrumbs={[{ content: 'Home', onAction: () => navigate('/debug') }]}
-      >
+      <Page title="Data Fetching" breadcrumbs={[{ content: 'Home', onAction: () => navigate('/debug') }]}>
          <Layout>
             <Layout.Section>
                <LegacyCard
@@ -60,7 +57,7 @@ const GetData = () => {
                   primaryFooterAction={{
                      content: 'Refetch',
                      onAction: () => {
-                        fetchContent();
+                        fetchContent()
                      }
                   }}
                >
@@ -75,7 +72,7 @@ const GetData = () => {
                   primaryFooterAction={{
                      content: 'Refetch',
                      onAction: () => {
-                        fetchContentPost();
+                        fetchContentPost()
                      }
                   }}
                >
@@ -90,7 +87,7 @@ const GetData = () => {
                   primaryFooterAction={{
                      content: 'Refetch',
                      onAction: () => {
-                        fetchContentGQL();
+                        fetchContentGQL()
                      }
                   }}
                >
@@ -101,13 +98,11 @@ const GetData = () => {
                <LegacyCard title="Developer Notes">
                   <LegacyCard.Section title="Making Requests">
                      <li>
-                        Create a new route in <code>/server/routes</code> and
-                        add it to your <code>index.js</code> to expose it behind{' '}
-                        <code>verifyRequest</code>.
+                        Create a new route in <code>/server/routes</code> and add it to your{' '}
+                        <code>index.js</code> to expose it behind <code>verifyRequest</code>.
                      </li>
                      <li>
-                        Create a new instance of <code>useFetch()</code> and use
-                        that to make a request to{' '}
+                        Create a new instance of <code>useFetch()</code> and use that to make a request to{' '}
                         <code>/api/your-route/goes-here/</code>
                      </li>
                      <li>
@@ -117,7 +112,7 @@ const GetData = () => {
                               redirect.dispatch(Redirect.Action.REMOTE, {
                                  url: 'https://tanstack.com/query/latest',
                                  newContext: true
-                              });
+                              })
                            }}
                         >
                            <code>@tanstack/react-query</code>
@@ -128,7 +123,7 @@ const GetData = () => {
                               redirect.dispatch(Redirect.Action.REMOTE, {
                                  url: 'https://swr.vercel.app',
                                  newContext: true
-                              });
+                              })
                            }}
                         >
                            <code>swr</code>
@@ -140,7 +135,7 @@ const GetData = () => {
             </Layout.Section>
          </Layout>
       </Page>
-   );
-};
+   )
+}
 
-export default GetData;
+export default GetData
