@@ -13,50 +13,54 @@ function cutStringUpToDotCom(str) {
 }
 
 export const getStoresFromTag = async (req, res, exceptStores = []) => {
-   console.log(chalk.blue('getting stores form product tags...'))
-   const { client } = await clientProvider.restClient({
-      req,
-      res,
-      isOnline: false
-   })
-   const response = await client.get({
-      path: `products/${req.params.product_id}`
-   })
-   const productTags = response.body.product.tags.split(', ')
-   const stores = await StoreModel.find({
-      tags: {
-         $in: productTags
-      }
-   })
-   const result = { toAdd: [], toDelete: [], byTag: stores}
-   if (exceptStores && exceptStores.length) {
-      const combinedStores = [
-         ...stores.map((st) => {
-            return { store: st, from: 'new' }
-         }),
-         ...exceptStores.map((st) => {
-            return { store: st, from: 'existing' }
-         })
-      ]
-      const resultArr = Object.values(
-         combinedStores.reduce((acc, val) => {
-            if (!acc[val.store._id.toString()]) {
-               acc[val.store._id.toString()] = { store: val.store, count: 1, from: val.from }
-            } else {
-               acc[val.store._id.toString()].count++
-            }
-            return acc
-         }, {})
-      )
-      resultArr.forEach((el) => {
-         if (el.count < 2) {
-            el.from === 'existing' ? result.toDelete.push(el.store) : result.toAdd.push(el.store)
+   console.log(chalk.blue('getting stores from product tags...'))
+   try {
+      const { client } = await clientProvider.restClient({
+         req,
+         res,
+         isOnline: false
+      })
+      const response = await client.get({
+         path: `products/${req.params.product_id}`
+      })
+      const productTags = response.body.product.tags.split(', ')
+      const stores = await StoreModel.find({
+         tags: {
+            $in: productTags
          }
       })
+      const result = { toAdd: [], toDelete: [], byTag: stores }
+      if (exceptStores && exceptStores.length) {
+         const combinedStores = [
+            ...stores.map((st) => {
+               return { store: st, from: 'new' }
+            }),
+            ...exceptStores.map((st) => {
+               return { store: st, from: 'existing' }
+            })
+         ]
+         const resultArr = Object.values(
+            combinedStores.reduce((acc, val) => {
+               if (!acc[val.store._id.toString()]) {
+                  acc[val.store._id.toString()] = { store: val.store, count: 1, from: val.from }
+               } else {
+                  acc[val.store._id.toString()].count++
+               }
+               return acc
+            }, {})
+         )
+         resultArr.forEach((el) => {
+            if (el.count < 2) {
+               el.from === 'existing' ? result.toDelete.push(el.store) : result.toAdd.push(el.store)
+            }
+         })
+         return result
+      }
+      result.toAdd = stores
       return result
+   } catch (error) {
+      console.log(chalk.red(error))
    }
-   result.toAdd = stores
-   return result
 }
 
 export const getSessionsFromStores = async (req, res, storeArr = [], options) => {
@@ -68,7 +72,6 @@ export const getSessionsFromStores = async (req, res, storeArr = [], options) =>
             $in: shops
          }
       })
-      if (!sessions) createHttpError(404, 'No sessions for the provided shops')
       let mappedSessions = sessions.map((session) => {
          const store = storeArr.find((st) => st.shop === session.shop)
          return { session, store }
@@ -81,7 +84,7 @@ export const getSessionsFromStores = async (req, res, storeArr = [], options) =>
       }
       return mappedSessions
    } catch (error) {
-      createHttpError(500, 'Server error')
+      console.log(chalk.red(error))
    }
 }
 
