@@ -45,6 +45,7 @@ productsRouter.get('/:product_id', async (req, res) => {
 productsRouter.post('/multistore/:product_id', async (req, res) => {
    try {
       const product = await getProduct(req, res)
+      delete product.body.product.id
 
       let existingInStores = []
       const multiStorePd = await getMultiStoreFromProductId(req, res)
@@ -52,7 +53,7 @@ productsRouter.post('/multistore/:product_id', async (req, res) => {
          existingInStores = multiStorePd.shopifyData.map((shop) => shop.store)
       }
 
-      const tempProduct = { title: 'calamaro' }
+      const productBody = product.body.product
 
       const stores = await getStoresFromTag(req, res, existingInStores)
       const sessionStoresToAdd = await getSessionsFromStores(req, res, stores.toAdd, {
@@ -67,7 +68,7 @@ productsRouter.post('/multistore/:product_id', async (req, res) => {
          for (const sessionObj of sessionStoresToAdd) {
             const loadedSession = await sessionHandler.loadSession(sessionObj.session.id)
             console.log(chalk.blue(`uploading product to ${sessionObj.store.shop}...`))
-            const uploaded = await uploadProduct(req, res, tempProduct, loadedSession)
+            const uploaded = await uploadProduct(req, res, productBody, loadedSession)
             uploadedProducts.push({ store: sessionObj.store._id, id: uploaded.body.product.id })
          }
          for (const sessionObj of sessionStoresToDelete) {
