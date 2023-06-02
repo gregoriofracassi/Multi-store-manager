@@ -59,11 +59,7 @@ export const getProduct = async (req, res) => {
    }
 }
 
-export const putProduct = async (req, res, productId, customSession) => {
-   // body example:
-   // product: {
-   //    title: 'whatever'
-   // }
+export const putProduct = async (req, res, productId, customSession, newProduct) => {
    try {
       const body = formatProductBody(req.body)
       const { client } = await clientProvider.restClient({

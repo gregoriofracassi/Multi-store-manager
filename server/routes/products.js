@@ -139,6 +139,7 @@ productsRouter.post('/multistore/:product_id', async (req, res) => {
 
 productsRouter.put('/multistore/:product_id', async (req, res) => {
    try {
+      const product = await getProduct(req, res)
       const multiStorePd = await getMultiStoreFromProductId(req, res)
       const fullData = []
       for (const shopiData of multiStorePd.shopifyData) {
@@ -154,7 +155,7 @@ productsRouter.put('/multistore/:product_id', async (req, res) => {
       for (const sessionObj of fullData) {
          const loadedSession = await sessionHandler.loadSession(sessionObj.sessionId)
          console.log(chalk.blue(`updating product in ${sessionObj.store.shop}...`))
-         await putProduct(req, res, sessionObj.id, loadedSession)
+         await putProduct(req, res, sessionObj.id, loadedSession, product.body.product)
       }
       const updated = await MultiStoreProductModel.findOneAndUpdate(
          { _id: multiStorePd._id },
