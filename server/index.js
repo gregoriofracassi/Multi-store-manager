@@ -95,7 +95,6 @@ const createServer = async (root = process.cwd()) => {
    app.use(isShopActive)
    // If you're making changes to any of the routes, please make sure to add them in `./client/vite.config.cjs` or it'll not work.
    app.use('/apps', verifyRequest, userRoutes) //Verify user route requests
-   // app.use('/stores', verifyRequest, storesRouter) //Verify user route requests
    app.use('/proxy_route', verifyProxy, proxyRouter) //MARK:- App Proxy routes
 
    app.post('/gdpr/:topic', verifyHmac, async (req, res) => {
