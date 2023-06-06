@@ -12,14 +12,16 @@ const verifyRequest = async (req, res, next) => {
    try {
       let { shop } = req.query
       const sessionId = await shopify.session.getCurrentId({
-         isOnline: true,
+         isOnline: false,
          rawRequest: req,
          rawResponse: res
       })
       req.sessionId = sessionId
+      console.log({ sessionId })
 
       const session = await sessionHandler.loadSession(sessionId)
-      if (new Date(session?.expires) > new Date()) {
+      // if (new Date(session?.expires) > new Date()) {
+      if (session) {
          // if (session?.isActive()) {
          const client = new shopify.clients.Graphql({ session })
          await client.query({ data: TEST_QUERY })
@@ -37,19 +39,14 @@ const verifyRequest = async (req, res, next) => {
                shop = session.shop
             } else if (shopify.config.isEmbeddedApp) {
                if (authBearer) {
-                  const payload = await shopify.session.decodeSessionToken(
-                     authBearer[1]
-                  )
+                  const payload = await shopify.session.decodeSessionToken(authBearer[1])
                   shop = payload.dest.replace('https://', '')
                }
             }
          }
          res.status(403)
          res.header('X-Shopify-API-Request-Failure-Reauthorize', '1')
-         res.header(
-            'X-Shopify-API-Request-Failure-Reauthorize-Url',
-            `/auth?shop=${shop}`
-         )
+         res.header('X-Shopify-API-Request-Failure-Reauthorize-Url', `/auth?shop=${shop}`)
          res.end()
       } else {
          res.redirect(`/auth?shop=${shop}`)

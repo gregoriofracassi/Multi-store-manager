@@ -78,9 +78,9 @@ export const getSessionsFromStores = async (req, res, storeArr = [], options) =>
       })
       if (options?.noCurrent && req.sessionId) {
          mappedSessions = mappedSessions.filter((sess) => sess.session.id !== req.sessionId)
-      }
-      if (options?.online) {
-         mappedSessions = mappedSessions.filter((ses) => !ses.session.id.startsWith('offline'))
+      } // makes sense only if combined with offline filter
+      if (options?.offline) {
+         mappedSessions = mappedSessions.filter((ses) => ses.session.id.startsWith('offline'))
       }
       return mappedSessions
    } catch (error) {
