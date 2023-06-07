@@ -38,7 +38,7 @@ productsRouter.get('/:product_id', async (req, res) => {
       })
       res.status(200).send(product)
    } catch (error) {
-      createHttpError(500, 'Server error')
+      console.log(chalk.red(error));
    }
 })
 
@@ -46,6 +46,7 @@ productsRouter.post('/multistore/:product_id', async (req, res) => {
    try {
       const product = await getProduct(req, res)
       delete product.body.product.id
+      const productBody = product.body.product
 
       let existingInStores = []
       const multiStorePd = await getMultiStoreFromProductId(req, res)
@@ -53,14 +54,12 @@ productsRouter.post('/multistore/:product_id', async (req, res) => {
          existingInStores = multiStorePd.shopifyData.map((shop) => shop.store)
       }
 
-      const productBody = product.body.product
-
       const stores = await getStoresFromTag(req, res, existingInStores)
       const sessionStoresToAdd = await getSessionsFromStores(req, res, stores.toAdd, {
-         online: true,
+         offline: true,
          noCurrent: true
       })
-      const sessionStoresToDelete = await getSessionsFromStores(req, res, stores.toDelete, { online: true })
+      const sessionStoresToDelete = await getSessionsFromStores(req, res, stores.toDelete, { offline: true })
 
       if (sessionStoresToDelete.length || sessionStoresToAdd.length) {
          const uploadedProducts = []
@@ -144,7 +143,7 @@ productsRouter.put('/multistore/:product_id', async (req, res) => {
       const fullData = []
       for (const shopiData of multiStorePd.shopifyData) {
          const session = await getSessionsFromStores(req, res, [shopiData.store], {
-            online: true,
+            offline: true,
             noCurrent: true
          })
          if (session.length) {
@@ -177,7 +176,7 @@ productsRouter.delete('/multistore/:product_id', async (req, res) => {
       const fullData = []
       for (const shopiData of multiStorePd.shopifyData) {
          const session = await getSessionsFromStores(req, res, [shopiData.store], {
-            online: true,
+            offline: true,
             noCurrent: true
          })
          if (session.length) {
