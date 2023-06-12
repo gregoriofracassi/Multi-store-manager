@@ -42,7 +42,6 @@ const createServer = async (root = process.cwd()) => {
    app.disable('x-powered-by')
 
    applyAuthMiddleware(app)
-
    // Incoming webhook requests
    app.post(
       '/webhooks/:topic',
@@ -52,6 +51,7 @@ const createServer = async (root = process.cwd()) => {
          const shop = req.headers['x-shopify-shop-domain'] || ''
 
          try {
+            console.log('received a webhook');
             await shopify.webhooks.process({
                rawBody: req.body,
                rawRequest: req,
@@ -90,7 +90,6 @@ const createServer = async (root = process.cwd()) => {
          res.status(403).send(e)
       }
    })
-
    app.use(csp)
    app.use(isShopActive)
    // If you're making changes to any of the routes, please make sure to add them in `./client/vite.config.cjs` or it'll not work.

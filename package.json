@@ -15,7 +15,7 @@
     "update": "ncu -u",
     "update:check": "ncu",
     "update:url": "node devUtils/updateDashboard.js",
-    "dev": "concurrently \"npm run dev:*\"",
+    "dev": "concurrently \"npm run dev:*\" --inspect",
     "dev:server": "NODE_ENV=dev nodemon server/index.js --ignore client/ --ignore dist/",
     "dev:client": "vite --config=./client/vite.config.cjs",
     "preserve": "npm run build",

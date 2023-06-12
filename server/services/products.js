@@ -6,7 +6,7 @@ export const formatProductBody = (body) => {
    return { product: body }
 }
 
-export const uploadProduct = async (req, res, newProduct, customSession) => {
+export const uploadProduct = async (newProduct, customSession, req, res ) => {
    try {
       const { client } = await clientProvider.restClient({
          req,
@@ -22,11 +22,11 @@ export const uploadProduct = async (req, res, newProduct, customSession) => {
       })
       return product
    } catch (error) {
-      console.log(chalk.red(error))
+      console.log(`From upload product service --> ${error}`)
    }
 }
 
-export const deleteProduct = async (req, res, productId, customSession) => {
+export const deleteProduct = async (productId, customSession, req, res) => {
    try {
       const { client } = await clientProvider.restClient({
          req,
@@ -39,23 +39,24 @@ export const deleteProduct = async (req, res, productId, customSession) => {
       })
       return product
    } catch (error) {
-      console.log(chalk.red(error))
+      console.log(chalk.red(`From delete product service --> ${error}`))
    }
 }
 
-export const getProduct = async (req, res) => {
+export const getProduct = async (productId, customSession, req, res) => {
    try {
       const { client } = await clientProvider.restClient({
          req,
          res,
-         isOnline: false
+         isOnline: false,
+         customSession
       })
       const product = await client.get({
-         path: `products/${req.params.product_id}`
+         path: `products/${productId}`
       })
       return product
    } catch (error) {
-      console.log(chalk.red(error))
+      console.log(chalk.red(`From get product service --> ${error}`))
    }
 }
 
@@ -74,6 +75,6 @@ export const putProduct = async (req, res, productId, customSession, newProduct)
       })
       return product
    } catch (error) {
-      console.log(chalk.red(error))
+      console.log(chalk.red(`From put product service --> ${error}`))
    }
 }
