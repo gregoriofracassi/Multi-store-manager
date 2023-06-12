@@ -15,7 +15,7 @@ const GetData = () => {
 
    async function fetchContent() {
       setResponseData('loading...')
-      const res = await fetch('/products/8378942587182') //fetch instance of useFetch()
+      const res = await fetch('/webhooks') //fetch instance of useFetch()
       const text = await res.json()
       setResponseData('ciaociao')
    }
