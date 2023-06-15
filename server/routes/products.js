@@ -38,7 +38,7 @@ productsRouter.get('/:product_id', async (req, res) => {
       })
       res.status(200).send(product)
    } catch (error) {
-      console.log(chalk.red(error));
+      console.log(chalk.red(error))
    }
 })
 
@@ -146,7 +146,7 @@ productsRouter.put('/multistore/:product_id', async (req, res) => {
             offline: true,
             noCurrent: true
          })
-         if (session.length) {
+         if (session && session.length) {
             fullData.push({ ...shopiData.toJSON(), sessionId: session[0].session.id })
          }
       }

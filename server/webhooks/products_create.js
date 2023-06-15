@@ -6,10 +6,9 @@ import MultiStoreProductModel from '../../utils/models/MultiStoreProducts.js'
 import { resetSession, loadSessionFromStore } from '../services/sessions.js'
 import chalk from 'chalk'
 
-const app_url = process.env.SHOPIFY_APP_URL
-
-const testHookHandler = async (topic, shop, webhookRequestBody, webhookId, apiVersion) => {
+const createProductHookHandler = async (topic, shop, webhookRequestBody, webhookId, apiVersion) => {
    try {
+      console.log(chalk.bgCyanBright(topic));
       const offlineSession = await loadSessionFromStore(shop)
       const productId = JSON.parse(webhookRequestBody).id.toString()
 
@@ -104,4 +103,4 @@ const testHookHandler = async (topic, shop, webhookRequestBody, webhookId, apiVe
    }
 }
 
-export default testHookHandler
+export default createProductHookHandler

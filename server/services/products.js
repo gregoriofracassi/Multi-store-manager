@@ -2,10 +2,6 @@ import clientProvider from '../../utils/clientProvider.js'
 import { DataType } from '@shopify/shopify-api'
 import chalk from 'chalk'
 
-export const formatProductBody = (body) => {
-   return { product: body }
-}
-
 export const uploadProduct = async (newProduct, customSession, req, res ) => {
    try {
       const { client } = await clientProvider.restClient({
@@ -60,9 +56,8 @@ export const getProduct = async (productId, customSession, req, res) => {
    }
 }
 
-export const putProduct = async (req, res, productId, customSession, newProduct) => {
+export const putProduct = async (productId, customSession, newProduct, req, res) => {
    try {
-      const body = formatProductBody(req.body)
       const { client } = await clientProvider.restClient({
          req,
          res,
@@ -71,7 +66,7 @@ export const putProduct = async (req, res, productId, customSession, newProduct)
       })
       const product = await client.put({
          path: `products/${productId}`,
-         data: body
+         data: {product: newProduct}
       })
       return product
    } catch (error) {
