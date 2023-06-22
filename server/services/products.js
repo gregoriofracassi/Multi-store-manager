@@ -2,7 +2,7 @@ import clientProvider from '../../utils/clientProvider.js'
 import { DataType } from '@shopify/shopify-api'
 import chalk from 'chalk'
 
-export const uploadProduct = async (newProduct, customSession, req, res ) => {
+export const uploadProduct = async (newProduct, customSession, req, res) => {
    try {
       const { client } = await clientProvider.restClient({
          req,
@@ -66,10 +66,28 @@ export const putProduct = async (productId, customSession, newProduct, req, res)
       })
       const product = await client.put({
          path: `products/${productId}`,
-         data: {product: newProduct}
+         data: { product: newProduct }
       })
       return product
    } catch (error) {
       console.log(chalk.red(`From put product service --> ${error}`))
+   }
+}
+
+export const getProductImages = async (productId, customSession, req, res) => {
+   try {
+      const { client } = await clientProvider.restClient({
+         req,
+         res,
+         isOnline: false,
+         customSession
+      })
+      const images = await client.get({
+         path: `products/${productId}/images`,
+      })
+      console.log({[`imagesFromGetProduct_${productId}`]: images?.body?.images});
+      return images?.body?.images || []
+   } catch (error) {
+      console.log(chalk.red(`From getProductImages --> ${error}`))
    }
 }

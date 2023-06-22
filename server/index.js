@@ -45,6 +45,7 @@ const createServer = async (root = process.cwd()) => {
 
       try {
          console.log('received a webhook')
+         // console.dir({req})
          await shopify.webhooks.process({
             rawBody: req.body,
             rawRequest: req,

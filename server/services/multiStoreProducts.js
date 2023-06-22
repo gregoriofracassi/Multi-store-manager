@@ -1,4 +1,3 @@
-import createHttpError from 'http-errors'
 import chalk from 'chalk'
 import MultiStoreProductModel from '../../utils/models/MultiStoreProducts.js'
 
@@ -14,6 +13,6 @@ export const getMultiStoreFromProductId = async (productId) => {
       }).populate('shopifyData.store')
       return multiStorePd
    } catch (error) {
-      createHttpError(500, 'Server error')
+      console.log(chalk.red(`Error from getMultiStoreFromProductId -> ${error}`));
    }
 }

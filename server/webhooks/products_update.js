@@ -1,18 +1,66 @@
-import { putProduct } from '../services/products.js'
+import { getProduct, getProductImages, putProduct } from '../services/products.js'
 import { getMultiStoreFromProductId } from '../services/multiStoreProducts.js'
-import { getStoresFromTag, getSessionsFromStores, getCurrentStore } from '../services/stores.js'
+import { getSessionsFromStores } from '../services/stores.js'
 import sessionHandler from '../../utils/sessionHandler.js'
 import MultiStoreProductModel from '../../utils/models/MultiStoreProducts.js'
 import { resetSession, loadSessionFromStore } from '../services/sessions.js'
 import chalk from 'chalk'
+import lodash from 'lodash'
+
+const { cloneDeep } = lodash
+
+const sanitizeProduct = async (product, id, customSession) => {
+   try {
+      const productCopy = cloneDeep(product)
+      delete productCopy.id
+
+      if (productCopy.images && productCopy.images.length) {
+         for (const image of productCopy.images) {
+            delete image.id
+            image.product_id = parseInt(id)
+            if (image.variant_ids && image.variant_ids.length) {
+               const response = await getProduct(id, customSession)
+               const productToPut = response.body.product
+
+               const newVariantIds = image.variant_ids.map((variantId) => {
+                  const variantIndex = productCopy.variants.findIndex((variant) => variant.id === variantId)
+                  const toPutVariantsIds = productToPut.variants.map((variant) => variant.id)
+                  productToPut.variants[variantIndex].image_id = image.id
+                  return toPutVariantsIds[variantIndex]
+               })
+               image.variant_ids = newVariantIds
+            }
+         }
+      }
+
+      productCopy.variants.forEach((variant) => {
+         delete variant['id']
+         variant.product_id = parseInt(id)
+      })
+
+      productCopy.options.forEach((option) => {
+         delete option.id
+         option.product_id = parseInt(id)
+      })
+
+      delete productCopy.image.id
+      productCopy.image.product_id = parseInt(id)
+
+      // console.dir({productCopy}, { depth: null })
+      return productCopy
+   } catch (error) {
+      console.log(chalk.red(`From sanitizeProduct --> ${error}`))
+   }
+}
 
 const updateProductHookHandler = async (topic, shop, webhookRequestBody, webhookId, apiVersion) => {
    try {
       console.log(chalk.bgCyanBright(topic))
       const offlineSession = await loadSessionFromStore(shop)
       const product = JSON.parse(webhookRequestBody)
-      delete product.variants
       const multiStorePd = await getMultiStoreFromProductId(product.id)
+      console.log(`Executing webhook ${chalk.cyan(webhookId)} for product ${chalk.greenBright(product.id)}`)
+
       if (multiStorePd) {
          const fullData = []
          for (const shopiData of multiStorePd.shopifyData) {
@@ -25,11 +73,15 @@ const updateProductHookHandler = async (topic, shop, webhookRequestBody, webhook
             }
          }
 
-         for (const sessionObj of fullData) {
+         const updateProducts = async (sessionObj) => {
             const loadedSession = await sessionHandler.loadSession(sessionObj.sessionId)
-            console.log(chalk.blue(`updating product in ${sessionObj.store.shop}...`))
-            await putProduct(sessionObj.id, loadedSession, product)
+            const sanitizedProduct = await sanitizeProduct(product, sessionObj.id, loadedSession)
+            console.log(chalk.blue(`updating product in ${sessionObj.store.shop}`))
+            const newProduct = await putProduct(sessionObj.id, loadedSession, sanitizedProduct)
+            return newProduct
          }
+         await Promise.allSettled(fullData.map((sessionObj) => updateProducts(sessionObj)))
+         
          await MultiStoreProductModel.findOneAndUpdate(
             { _id: multiStorePd._id },
             {
