@@ -33,13 +33,16 @@ const createProductHookHandler = async (topic, shop, webhookRequestBody, webhook
       if (sessionStoresToDelete.length || sessionStoresToAdd.length) {
          const uploadedProducts = []
          const deletedProducts = []
-         for (const sessionObj of sessionStoresToAdd) {
+
+         const addProducts = async (sessionObj) => {
             const loadedSession = await sessionHandler.loadSession(sessionObj.session.id)
             console.log(chalk.blue(`uploading product to ${sessionObj.store.shop}...`))
             const uploaded = await uploadProduct(productBody, loadedSession)
             uploadedProducts.push({ store: sessionObj.store._id, id: uploaded.body.product.id })
          }
-         for (const sessionObj of sessionStoresToDelete) {
+         await Promise.allSettled(sessionStoresToAdd.map((sessionObj) => addProducts(sessionObj)))
+        
+         const removeProducts = async (sessionObj) => {
             const loadedSession = await sessionHandler.loadSession(sessionObj.session.id)
             console.log(chalk.blue(`deleting product from ${sessionObj.store.shop}...`))
             const shopifyData = multiStorePd.shopifyData.find(
@@ -48,6 +51,7 @@ const createProductHookHandler = async (topic, shop, webhookRequestBody, webhook
             await deleteProduct(shopifyData.id, loadedSession)
             deletedProducts.push({ id: shopifyData.id, store: sessionObj.store._id })
          }
+         await Promise.allSettled(sessionStoresToDelete.map((sessionObj) => removeProducts(sessionObj)))
 
          const responseObj = {}
 

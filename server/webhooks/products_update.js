@@ -20,13 +20,14 @@ const sanitizeProduct = async (product, id, customSession) => {
             image.product_id = parseInt(id)
             if (image.variant_ids && image.variant_ids.length) {
                const response = await getProduct(id, customSession)
-               const productToPut = response.body.product
+               const productToModify = response.body.product
 
                const newVariantIds = image.variant_ids.map((variantId) => {
                   const variantIndex = productCopy.variants.findIndex((variant) => variant.id === variantId)
-                  const toPutVariantsIds = productToPut.variants.map((variant) => variant.id)
-                  productToPut.variants[variantIndex].image_id = image.id
-                  return toPutVariantsIds[variantIndex]
+                  console.log({variantIndex});
+                  const toModVariantIds = productToModify.variants.map((variant) => variant.id)
+                  // productToModify.variants[variantIndex].image_id = image.id
+                  return toModVariantIds[variantIndex]
                })
                image.variant_ids = newVariantIds
             }

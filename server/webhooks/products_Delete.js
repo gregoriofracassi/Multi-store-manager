@@ -24,11 +24,13 @@ const deleteProductHookHandler = async (topic, shop, webhookRequestBody, webhook
             }
          }
 
-         for (const sessionObj of fullData) {
+         const deleteProducts = async (sessionObj) => {
             const loadedSession = await sessionHandler.loadSession(sessionObj.sessionId)
             console.log(chalk.blue(`deleting product in ${sessionObj.store.shop}...`))
             await deleteProduct(sessionObj.id, loadedSession)
          }
+         await Promise.allSettled(fullData.map((sessionObj) => deleteProducts(sessionObj)))
+         
          await MultiStoreProductModel.findOneAndDelete({ _id: multiStorePd._id })
       } else {
          console.log(chalk.yellow('No record of this product being associated to others'))
