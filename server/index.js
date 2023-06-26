@@ -8,11 +8,7 @@ import shopify from '../utils/shopifyConfig.js'
 import sessionHandler from '../utils/sessionHandler.js'
 import csp from './middleware/csp.js'
 import setupCheck from '../utils/setupCheck.js'
-import {
-   customerDataRequest,
-   customerRedact,
-   shopRedact
-} from './controllers/gdpr.js'
+import { customerDataRequest, customerRedact, shopRedact } from './controllers/gdpr.js'
 import applyAuthMiddleware from './middleware/auth.js'
 import isShopActive from './middleware/isShopActive.js'
 import verifyHmac from './middleware/verifyHmac.js'
@@ -27,48 +23,42 @@ setupCheck() // Run a check to ensure everything is setup properly
 
 const PORT = parseInt(process.env.PORT, 10) || 8081
 const isDev = process.env.NODE_ENV === 'dev'
+const additionalHooks = JSON.parse(process.env.ADDITIONAL_HOOKS)
 
 // MongoDB Connection
-const mongoUrl =
-   process.env.MONGO_URL || 'mongodb://127.0.0.1:27017/shopify-express-app'
+const mongoUrl = process.env.MONGO_URL || 'mongodb://127.0.0.1:27017/shopify-express-app'
 
 mongoose.connect(mongoUrl)
 
 // Register all webhook handlers
-webhookRegistrar()
+webhookRegistrar(additionalHooks)
 
 const createServer = async (root = process.cwd()) => {
    const app = Express()
    app.disable('x-powered-by')
 
    applyAuthMiddleware(app)
-
    // Incoming webhook requests
-   app.post(
-      '/webhooks/:topic',
-      Express.text({ type: '*/*' }),
-      async (req, res) => {
-         const { topic } = req.params || ''
-         const shop = req.headers['x-shopify-shop-domain'] || ''
+   app.post('/webhooks/:topic', Express.text({ type: '*/*' }), async (req, res) => {
+      const { topic } = req.params || ''
+      const shop = req.headers['x-shopify-shop-domain'] || ''
 
-         try {
-            await shopify.webhooks.process({
-               rawBody: req.body,
-               rawRequest: req,
-               rawResponse: res
-            })
-            console.log(`--> Processed ${topic} webhook for ${shop}`)
-         } catch (e) {
-            console.error(
-               `---> Error while registering ${topic} webhook for ${shop}`,
-               e
-            )
-            if (!res.headersSent) {
-               res.status(500).send(error.message)
-            }
+      try {
+         console.log('received a webhook')
+         // console.dir({req})
+         await shopify.webhooks.process({
+            rawBody: req.body,
+            rawRequest: req,
+            rawResponse: res
+         })
+         console.log(`--> Processed ${topic} webhook for ${shop}`)
+      } catch (e) {
+         console.error(`---> Error while registering ${topic} webhook for ${shop}`, e)
+         if (!res.headersSent) {
+            res.status(500).send(error.message)
          }
       }
-   )
+   })
 
    app.use(Express.json())
 
@@ -90,7 +80,6 @@ const createServer = async (root = process.cwd()) => {
          res.status(403).send(e)
       }
    })
-
    app.use(csp)
    app.use(isShopActive)
    // If you're making changes to any of the routes, please make sure to add them in `./client/vite.config.cjs` or it'll not work.
@@ -132,12 +121,8 @@ const createServer = async (root = process.cwd()) => {
    })
 
    if (!isDev) {
-      const compression = await import('compression').then(
-         ({ default: fn }) => fn
-      )
-      const serveStatic = await import('serve-static').then(
-         ({ default: fn }) => fn
-      )
+      const compression = await import('compression').then(({ default: fn }) => fn)
+      const serveStatic = await import('serve-static').then(({ default: fn }) => fn)
       const fs = await import('fs')
 
       app.use(compression())

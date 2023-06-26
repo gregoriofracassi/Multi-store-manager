@@ -4,24 +4,18 @@ import SessionModel from '../../utils/models/SessionModel.js'
 import createHttpError from 'http-errors'
 import chalk from 'chalk'
 
-function cutStringUpToDotCom(str) {
-   const dotComIndex = str.indexOf('.com')
-   if (dotComIndex !== -1) {
-      return str.substring(0, dotComIndex + 4)
-   }
-   return str
-}
 
-export const getStoresFromTag = async (req, res, exceptStores = []) => {
+export const getStoresFromTag = async (exceptStores = [], customSession, productId, req, res) => {
    console.log(chalk.blue('getting stores from product tags...'))
    try {
       const { client } = await clientProvider.restClient({
          req,
          res,
-         isOnline: false
+         isOnline: false,
+         customSession
       })
       const response = await client.get({
-         path: `products/${req.params.product_id}`
+         path: `products/${productId}`
       })
       const productTags = response.body.product.tags.split(', ')
       const stores = await StoreModel.find({
@@ -59,11 +53,11 @@ export const getStoresFromTag = async (req, res, exceptStores = []) => {
       result.toAdd = stores
       return result
    } catch (error) {
-      console.log(chalk.red(error))
+      console.log(chalk.red(`From getStoresFromTag service --> ${error}`))
    }
 }
 
-export const getSessionsFromStores = async (req, res, storeArr = [], options) => {
+export const getSessionsFromStores = async (storeArr = [], currentSessionId, options, req, res) => {
    console.log(chalk.blue('getting sessions from stores...'))
    try {
       const shops = storeArr.map((store) => store.shop)
@@ -76,26 +70,25 @@ export const getSessionsFromStores = async (req, res, storeArr = [], options) =>
          const store = storeArr.find((st) => st.shop === session.shop)
          return { session, store }
       })
-      if (options?.noCurrent && req.sessionId) {
-         mappedSessions = mappedSessions.filter((sess) => sess.session.id !== req.sessionId)
+      if (options?.noCurrent && currentSessionId) {
+         mappedSessions = mappedSessions.filter((sess) => sess.session.id !== currentSessionId)
       } // makes sense only if combined with offline filter
       if (options?.offline) {
          mappedSessions = mappedSessions.filter((ses) => ses.session.id.startsWith('offline'))
       }
       return mappedSessions
    } catch (error) {
-      console.log(chalk.red(error))
+      console.log(chalk.red(`From create webhook --> ${`From getSessionsFromStores service --> ${error}`}`))
    }
 }
 
-export const getCurrentStore = async (req, res) => {
+export const getCurrentStore = async (sessionId) => {
    try {
-      const { sessionId } = req
       const store = await StoreModel.findOne({
-         shop: cutStringUpToDotCom(sessionId)
+         shop: sessionId.replace('offline_', '')
       })
       return store
    } catch (error) {
-      console.log(chalk.red('Cannot find store with current session id'))
+      console.log(chalk.red(`From getCUrretStore service --> ${error}`))
    }
 }

@@ -19,9 +19,9 @@ const shopifyDataSchema = new mongoose.Schema(
 
 const multiStoreProductSchema = new mongoose.Schema({
    shopifyData: [shopifyDataSchema],
-   product: {
+   product: [{
       type: mongoose.Schema.Types.Mixed
-   }
+   }]
 })
 
 const MultiStoreProductModel = mongoose.model('multiStoreProduct', multiStoreProductSchema)

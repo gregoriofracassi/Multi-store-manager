@@ -1,15 +1,21 @@
 import sessionHandler from '../../utils/sessionHandler.js'
 import chalk from 'chalk'
 
-export const resetSession = async (req, res) => {
+export const resetSession = async (sessionId) => {
    console.log(chalk.blue('resetting initial session...'))
 
    try {
-      await sessionHandler.loadSession(req.sessionId)
-      if (req.sessionId) {
-         delete req.sessionId
-      }
+      await sessionHandler.loadSession(sessionId)
+      // if (req?.sessionId) {
+      //    delete req.sessionId
+      // }
    } catch (error) {
-      console.log(chalk.red(error))
+      console.log(chalk.red(`From reset session service --> ${error}`))
    }
+}
+
+export const loadSessionFromStore = async (shop) => {
+   const sessionId = `offline_${shop}`
+   const offlineSession = await sessionHandler.loadSession(sessionId)
+   return offlineSession
 }

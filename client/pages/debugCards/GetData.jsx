@@ -15,14 +15,14 @@ const GetData = () => {
 
    async function fetchContent() {
       setResponseData('loading...')
-      const res = await fetch('/products/8362023682370') //fetch instance of useFetch()
+      const res = await fetch('/webhooks') //fetch instance of useFetch()
       const text = await res.json()
       setResponseData('ciaociao')
    }
    async function fetchContentPost() {
       setResponseDataPost('loading...')
       const postBody = JSON.stringify({ title: "melanzana al vapore" })
-      const res = await fetch('/products/multistore/8362023682370', {
+      const res = await fetch('/products/multistore/8378942587182', {
          headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json'
