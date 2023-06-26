@@ -13,29 +13,12 @@ const sanitizeProduct = async (product, id, customSession) => {
    try {
       const productCopy = cloneDeep(product)
       delete productCopy.id
-
-      if (productCopy.images && productCopy.images.length) {
-         for (const image of productCopy.images) {
-            delete image.id
-            image.product_id = parseInt(id)
-            if (image.variant_ids && image.variant_ids.length) {
-               const response = await getProduct(id, customSession)
-               const productToModify = response.body.product
-
-               const newVariantIds = image.variant_ids.map((variantId) => {
-                  const variantIndex = productCopy.variants.findIndex((variant) => variant.id === variantId)
-                  console.log({variantIndex});
-                  const toModVariantIds = productToModify.variants.map((variant) => variant.id)
-                  // productToModify.variants[variantIndex].image_id = image.id
-                  return toModVariantIds[variantIndex]
-               })
-               image.variant_ids = newVariantIds
-            }
-         }
-      }
+      const response = await getProduct(id, customSession)
+      let productToModify = response.body.product
 
       productCopy.variants.forEach((variant) => {
          delete variant['id']
+         delete variant.image_id
          variant.product_id = parseInt(id)
       })
 
@@ -46,6 +29,41 @@ const sanitizeProduct = async (product, id, customSession) => {
 
       delete productCopy.image.id
       productCopy.image.product_id = parseInt(id)
+
+      if (productToModify?.variants?.length !== productCopy?.variants?.length) {
+         console.log(chalk.blueBright('Updating number of variants'))
+         await putProduct(id, customSession, productCopy)
+         const response = await getProduct(id, customSession)
+         productToModify = response.body.product
+         console.dir(
+            { prodInReq: productCopy.variants.length, prodSaved: productToModify.variants.length },
+            { depth: null }
+         )
+      }
+
+      if (productCopy.images && productCopy.images.length) {
+         productCopy.images.forEach((image, index) => {
+            delete image.id
+            image.product_id = parseInt(id)
+
+            if (image.variant_ids && image.variant_ids.length) {
+               const newVariantIds = image.variant_ids.map((variantId, ind) => {
+                  const variantIndex = product.variants.findIndex((variant) => variant.id === variantId)
+                  // console.log(
+                  //    chalk.cyan(
+                  //       `Img ind.${index} is considering variant_id ind.${ind}, is assigned to variant ind.${variantIndex} in the main product`
+                  //    )
+                  // )
+                  const toModVariantIds = productToModify.variants.map((variant) => variant.id)
+                  // console.log(chalk.cyan(`These are the ids of the variants of corresponding product ${id}:`))
+                  // console.dir({ toModVariantIds })
+                  // console.dir({ 'toModVariantIds[variantIndex]': toModVariantIds[variantIndex] })
+                  return toModVariantIds[variantIndex]
+               })
+               image.variant_ids = newVariantIds
+            }
+         })
+      }
 
       // console.dir({productCopy}, { depth: null })
       return productCopy
@@ -82,7 +100,7 @@ const updateProductHookHandler = async (topic, shop, webhookRequestBody, webhook
             return newProduct
          }
          await Promise.allSettled(fullData.map((sessionObj) => updateProducts(sessionObj)))
-         
+
          await MultiStoreProductModel.findOneAndUpdate(
             { _id: multiStorePd._id },
             {
