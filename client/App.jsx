@@ -19,7 +19,7 @@ export default function App() {
 
   return (
     <PolarisProvider i18n={translations}>
-      <AppBridgeProvider>
+      {/* <AppBridgeProvider>
         <NavigationMenu
           navigationLinks={[
             {
@@ -34,7 +34,7 @@ export default function App() {
           matcher={(link) => currentPath === link.destination}
         />
         <ApolloClientProvider>{RouteComponents}</ApolloClientProvider>
-      </AppBridgeProvider>
+      </AppBridgeProvider> */}
     </PolarisProvider>
   );
 }
