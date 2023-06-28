@@ -42,6 +42,7 @@ const authMiddleware = (app) => {
 
          await sessionHandler.storeSession(session)
 
+         console.log('trying to register webhooks');
          const webhookRegisterResponse = await shopify.webhooks.register({
             session
          }) //Register all webhooks with offline token
