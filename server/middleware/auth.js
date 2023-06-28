@@ -31,10 +31,12 @@ const authMiddleware = (app) => {
 
    app.get('/auth/tokens', async (req, res) => {
       try {
+         console.log('start auth tokens');
          const callbackResponse = await shopify.auth.callback({
             rawRequest: req,
             rawResponse: res
          })
+         console.log({callbackResponse});
 
          const { session } = callbackResponse
 
@@ -43,7 +45,7 @@ const authMiddleware = (app) => {
          const webhookRegisterResponse = await shopify.webhooks.register({
             session
          }) //Register all webhooks with offline token
-         console.log(webhookRegisterResponse) //This is an array that includes all registry responses.
+         console.log({webhookRegisterResponse}) //This is an array that includes all registry responses.
 
          return await shopify.auth.begin({
             shop: session.shop,

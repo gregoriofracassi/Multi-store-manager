@@ -121,6 +121,7 @@ const createServer = async (root = process.cwd()) => {
    })
 
    if (!isDev) {
+      console.log('im running the prod part');
       const compression = await import('compression').then(({ default: fn }) => fn)
       const serveStatic = await import('serve-static').then(({ default: fn }) => fn)
       const fs = await import('fs')
