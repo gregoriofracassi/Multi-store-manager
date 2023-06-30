@@ -20,7 +20,7 @@ export default function App() {
   return (
     <PolarisProvider i18n={translations}>
       <AppBridgeProvider>
-        <NavigationMenu
+        {/* <NavigationMenu
           navigationLinks={[
             {
               label: "Fetch Data",
@@ -32,7 +32,7 @@ export default function App() {
             },
           ]}
           matcher={(link) => currentPath === link.destination}
-        />
+        /> */}
         <ApolloClientProvider>{RouteComponents}</ApolloClientProvider>
       </AppBridgeProvider>
     </PolarisProvider>
