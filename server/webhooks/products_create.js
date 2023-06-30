@@ -5,6 +5,17 @@ import sessionHandler from '../../utils/sessionHandler.js'
 import MultiStoreProductModel from '../../utils/models/MultiStoreProducts.js'
 import { resetSession, loadSessionFromStore } from '../services/sessions.js'
 import chalk from 'chalk'
+import lodash from 'lodash'
+
+const { cloneDeep } = lodash
+
+const sanitizeProduct = (product) => {
+   product.variants.forEach((variant) => {
+      const newPrice = parseInt(variant.price) * 3
+      variant.price = newPrice.toString()
+   })
+   return product
+}
 
 const createProductHookHandler = async (topic, shop, webhookRequestBody, webhookId, apiVersion) => {
    try {
@@ -37,7 +48,8 @@ const createProductHookHandler = async (topic, shop, webhookRequestBody, webhook
          const addProducts = async (sessionObj) => {
             const loadedSession = await sessionHandler.loadSession(sessionObj.session.id)
             console.log(chalk.blue(`uploading product to ${sessionObj.store.shop}...`))
-            const uploaded = await uploadProduct(productBody, loadedSession)
+            const sanitizedProduct = sanitizeProduct(productBody)
+            const uploaded = await uploadProduct(sanitizedProduct, loadedSession)
             uploadedProducts.push({ store: sessionObj.store._id, id: uploaded.body.product.id })
          }
          await Promise.allSettled(sessionStoresToAdd.map((sessionObj) => addProducts(sessionObj)))
