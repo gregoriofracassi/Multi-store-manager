@@ -10,20 +10,21 @@ import lodash from 'lodash'
 const { cloneDeep } = lodash
 
 const sanitizeProduct = (product) => {
-   product.variants.forEach((variant) => {
-      const newPrice = parseInt(variant.price) * 3
+   const newProduct = cloneDeep(product)
+   newProduct.variants.forEach((variant) => {
+      const newPrice = parseInt(variant.price) * 3 + 0.99
       variant.price = newPrice.toString()
    })
-   return product
+   return newProduct
 }
 
 const createProductHookHandler = async (topic, shop, webhookRequestBody, webhookId, apiVersion) => {
    try {
-      console.log(chalk.bgCyanBright(topic));
+      console.log(chalk.bgCyanBright(topic))
       const offlineSession = await loadSessionFromStore(shop)
       const productId = JSON.parse(webhookRequestBody).id.toString()
 
-      console.log(`Executing webhook ${chalk.cyan(webhookId)} for product ${chalk.greenBright(productId)}`);
+      console.log(`Executing webhook ${chalk.cyan(webhookId)} for product ${chalk.greenBright(productId)}`)
       const product = await getProduct(productId, offlineSession)
       delete product.body.product.id
       const productBody = product.body.product
@@ -33,13 +34,15 @@ const createProductHookHandler = async (topic, shop, webhookRequestBody, webhook
       if (multiStorePd) {
          existingInStores = multiStorePd.shopifyData.map((shop) => shop.store)
       }
-      
+
       const stores = await getStoresFromTag(existingInStores, offlineSession, productId)
       const sessionStoresToAdd = await getSessionsFromStores(stores.toAdd, offlineSession.id, {
          offline: true,
          noCurrent: true
       })
-      const sessionStoresToDelete = await getSessionsFromStores(stores.toDelete, offlineSession.id, { offline: true })
+      const sessionStoresToDelete = await getSessionsFromStores(stores.toDelete, offlineSession.id, {
+         offline: true
+      })
 
       if (sessionStoresToDelete.length || sessionStoresToAdd.length) {
          const uploadedProducts = []
@@ -53,7 +56,7 @@ const createProductHookHandler = async (topic, shop, webhookRequestBody, webhook
             uploadedProducts.push({ store: sessionObj.store._id, id: uploaded.body.product.id })
          }
          await Promise.allSettled(sessionStoresToAdd.map((sessionObj) => addProducts(sessionObj)))
-        
+
          const removeProducts = async (sessionObj) => {
             const loadedSession = await sessionHandler.loadSession(sessionObj.session.id)
             console.log(chalk.blue(`deleting product from ${sessionObj.store.shop}...`))

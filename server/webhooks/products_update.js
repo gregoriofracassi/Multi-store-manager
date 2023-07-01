@@ -19,7 +19,7 @@ const sanitizeProduct = async (product, id, customSession) => {
       productCopy.variants.forEach((variant) => {
          delete variant['id']
          delete variant.image_id
-         const newPrice = parseInt(variant.price) * 3
+         const newPrice = parseInt(variant.price) * 3 + 0.99
          variant.price = newPrice.toString()
          variant.product_id = parseInt(id)
       })
