@@ -31,18 +31,15 @@ const authMiddleware = (app) => {
 
    app.get('/auth/tokens', async (req, res) => {
       try {
-         console.log('start auth tokens');
          const callbackResponse = await shopify.auth.callback({
             rawRequest: req,
             rawResponse: res
          })
-         console.log({callbackResponse});
 
          const { session } = callbackResponse
 
          await sessionHandler.storeSession(session)
 
-         console.log('trying to register webhooks');
          const webhookRegisterResponse = await shopify.webhooks.register({
             session
          }) //Register all webhooks with offline token
