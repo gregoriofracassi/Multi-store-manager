@@ -10,12 +10,30 @@ import lodash from 'lodash'
 const { cloneDeep } = lodash
 
 const sanitizeProduct = (product) => {
-   const newProduct = cloneDeep(product)
-   newProduct.variants.forEach((variant) => {
+   const productCopy = cloneDeep(product)
+   productCopy.variants.forEach((variant) => {
       const newPrice = parseInt(variant.price) * 3 + 0.99
       variant.price = newPrice.toString()
+      // delete variant['id']
+      // if (variant.image_id) delete variant.image_id
    })
-   return newProduct
+
+   // if (productCopy.options && productCopy.options.length) {
+   //    productCopy.options.forEach((option) => {
+   //       delete option.id
+   //    })
+   // }
+
+   // if (productCopy.images && productCopy.images.length) {
+   //    productCopy.images.forEach((option) => {
+   //       delete option.id
+   //    })
+   // }
+
+   delete productCopy.image.id
+
+   console.dir({ productCopy }, { depth: null })
+   return productCopy
 }
 
 const createProductHookHandler = async (topic, shop, webhookRequestBody, webhookId, apiVersion) => {
