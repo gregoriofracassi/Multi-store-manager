@@ -1,5 +1,5 @@
 import { getProduct, uploadProduct, deleteProduct } from '../services/products.js'
-import { getMultiStoreFromProductId } from '../services/multiStoreProducts.js'
+import { getMultiStoreFromProductId, _populateStoresWithTags } from '../services/multiStoreProducts.js'
 import { getStoresFromTag, getSessionsFromStores, getCurrentStore } from '../services/stores.js'
 import sessionHandler from '../../utils/sessionHandler.js'
 import MultiStoreProductModel from '../../utils/models/MultiStoreProducts.js'
@@ -15,12 +15,20 @@ const sanitizeProduct = (product) => {
       const newPrice = parseInt(variant.price) * 3 + 0.99
       variant.price = newPrice.toString()
    })
+
+   newProduct.images.forEach((img) => {
+      delete img.id
+   })
    return newProduct
 }
 
 const createProductHookHandler = async (topic, shop, webhookRequestBody, webhookId, apiVersion) => {
    try {
-      console.log(chalk.bgCyanBright(topic))
+      if (JSON.parse(webhookRequestBody).title === 'fillTags') {
+         console.log('filling tags arrays')
+         await _populateStoresWithTags()
+      } else {
+         console.log(chalk.bgCyanBright(topic))
       const offlineSession = await loadSessionFromStore(shop)
       const productId = JSON.parse(webhookRequestBody).id.toString()
 
@@ -117,6 +125,7 @@ const createProductHookHandler = async (topic, shop, webhookRequestBody, webhook
          console.log(chalk.yellow('Product already present in all corresponding stores'))
       }
       console.log(chalk.green('done.'))
+      }
    } catch (error) {
       console.log(chalk.red(`From create webhook --> ${error}`))
    }
