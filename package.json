@@ -1,15 +1,15 @@
 {
-  "name": "shopify-express-boilerplate",
+  "name": "Multi-store-manager",
   "version": "0.0.6",
-  "description": "Shopify Boilerplate Code written in React, Node, Express, MongoDB and GraphQL",
+  "description": "",
   "type": "module",
   "author": {
-    "name": "Harshdeep Singh Hura",
-    "url": "https://harshdeephura.com"
+    "name": "Gregorio Fracassi",
+    "url": ""
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/kinngh/shopify-node-express-mongodb-app.git"
+    "url": "https://github.com/gregoriofracassi/Multi-store-manager/settings"
   },
   "scripts": {
     "update": "ncu -u",
