@@ -20,17 +20,9 @@ const verifyRequest = async (req, res, next) => {
       console.log({ sessionId })
 
       const session = await sessionHandler.loadSession(sessionId)
-      // if (new Date(session?.expires) > new Date()) {
+
       if (session) {
-         // if (session?.isActive()) {
-         //    const client = new shopify.clients.Graphql({ session })
-         //    await client.query({ data: TEST_QUERY })
-         //    res.setHeader(
-         //       'Content-Security-Policy',
-         //       `frame-ancestors https://${session.shop} https://admin.shopify.com;`
-         //    )
-            return next()
-         // }
+         return next()
       }
 
       const authBearer = req.headers.authorization?.match(/Bearer (.*)/)

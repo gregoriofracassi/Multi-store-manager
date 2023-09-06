@@ -47,12 +47,12 @@ const HomePage = () => {
                <LegacyCard sectioned title="Sincronizzazione prodotti">
                   <p>
                      Per <b>caricare, modificare o cancellare un prodotto</b> su più store contemporaneamente,
-                     fallo normalmente sullo <b>store madre</b> e sarà caricato/modificato/cancellato automaticamente
-                     anche sugli altri store a seconda di quali tag gli hai dato. <br />
-                     Se vuoi modificare il prodotto su uno degli store satellite questo non modificherà gli altri prodotti associati.
+                     fallo normalmente sullo <b>store madre</b> e sarà caricato/modificato/cancellato
+                     automaticamente anche sugli altri store a seconda di quali tag gli hai dato. <br />
+                     Se vuoi modificare il prodotto su uno degli store satellite questo non modificherà gli
+                     altri prodotti associati.
                      <br />
                      <br />
-                     
                   </p>
                   <p>
                      Ogni store ha una serie di tag che servono per l'associazione dei prodotti. Al momento
@@ -63,12 +63,15 @@ const HomePage = () => {
                   </p>
                   <p>
                      Se vuoi <b>modificare la distribuzione</b> di un prodotto sugli store satellite, la
-                     modifica del tag sul prodotto nello store madre non è sufficiente.
-                     Cancella il prodotto e re-uploadalo con i tag che vuoi. Se si trova che sarebbe più comodo avere la sincronizzazione sulla modifica dei tag di un prodotto già presente scrivetemelo su Discord &#9757; &#128077;
+                     modifica del tag sul prodotto nello store madre non è sufficiente. Cancella il prodotto e
+                     re-uploadalo con i tag che vuoi. Se si trova che sarebbe più comodo avere la
+                     sincronizzazione sulla modifica dei tag di un prodotto già presente scrivetemelo su
+                     Discord &#9757; &#128077;
                      <br />
                      <br />
                      <Text as="span" color="warning" fontWeight="semibold">
-                        Al momento non avrai un feedback visivo dei prodotti che si caricano sui vari store, è in fase di sviluppo. <br></br>
+                        Al momento non avrai un feedback visivo dei prodotti che si caricano sui vari store, è
+                        in fase di sviluppo. <br></br>
                         Se non vedi ancora i prodotti presenti negli store associati, aspetta un paio di
                         minuti. Se la chiamata fallisce è programmata per ripetersi automaticamente. Se il
                         problema persiste scrivi a Gregorio.

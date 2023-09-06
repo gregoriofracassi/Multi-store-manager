@@ -17,7 +17,7 @@ function ApolloClientProvider({ children }) {
 
 export default ApolloClientProvider
 
-//MARK:- This is a copy of the useFetch hook without the appOrigin.
+// This is a copy of the useFetch hook without the appOrigin.
 function fetchContent() {
    const app = useAppBridge()
    const fetchFunction = authenticatedFetch(app)

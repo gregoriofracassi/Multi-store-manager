@@ -18,7 +18,6 @@ const storeSession = async (session) => {
 };
 
 const loadSession = async (id) => {
-   //   const sessionResult = await SessionModel.findOne({ id: 'gbranddevstore2.myshopify.com_97640874286' });
    const sessionResult = await SessionModel.findOne({ id });
    if (sessionResult === null) {
       return undefined;
@@ -39,22 +38,3 @@ const deleteSession = async (id) => {
 const sessionHandler = { storeSession, loadSession, deleteSession };
 
 export default sessionHandler;
-
-// {
-//    sessionObj: {
-//      id: 'gbrand-store2023.myshopify.com_97395507507',
-//      shop: 'gbrand-store2023.myshopify.com',
-//      state: '352543414120517',
-//      isOnline: true,
-//      accessToken: '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',
-//      scope: 'write_content',
-//      expires: '2023-05-20T11:21:10.256Z',
-//      onlineAccessInfo: {
-//        expires_in: 86392,
-//        associated_user_scope: 'write_content',
-//        session: '7d4d3e21c7b7b06c38d4cf1d4da47d2273bbe65fdfa9fc077531c93bbf2a6ce3',
-//        account_number: 0,
-//        associated_user: [Object]
-//      }
-//    }
-//  }

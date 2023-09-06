@@ -17,7 +17,6 @@ function useFetch() {
 
          const redirect = Redirect.create(app)
          redirect.dispatch(Redirect.Action.REMOTE, `https://${appOrigin}${authUrlHeader}`)
-         // redirect.dispatch(Redirect.Action.APP, authUrlHeader || `/exitframe`) 
          return null
       }
 

@@ -61,11 +61,3 @@ export default defineConfig({
       }
    }
 })
-
-// proxy routes ARE clumsy, but a future update will refactor into a single route
-// like /apps/* so everything works as expected.
-// I am working on `create-shop-app` project anyways where I deal with this
-// so just 🐻 with me on this, but it's production ready, so don't worry about this
-// On a future date I'll push out a migration guide because the entire structure will change
-// to make the developer experience better.
-// https://github.com/kinngh/create-shop-app

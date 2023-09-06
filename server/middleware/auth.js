@@ -43,8 +43,7 @@ const authMiddleware = (app) => {
          const webhookRegisterResponse = await shopify.webhooks.register({
             session
          }) //Register all webhooks with offline token
-         console.log({webhookRegisterResponse}) //This is an array that includes all registry responses.
-
+         console.log({webhookRegisterResponse})
          return await shopify.auth.begin({
             shop: session.shop,
             callbackPath: '/auth/callback',
@@ -85,7 +84,7 @@ const authMiddleware = (app) => {
          const host = req.query.host
          const { shop } = session
 
-         await StoreModel.findOneAndUpdate({ shop }, { isActive: true }, { upsert: true }) //Update store to true after auth has happened, or it'll cause reinstall issues.
+         await StoreModel.findOneAndUpdate({ shop }, { isActive: true }, { upsert: true })
 
          // Redirect to app with shop parameter upon auth
          res.redirect(`/?shop=${shop}&host=${host}`)

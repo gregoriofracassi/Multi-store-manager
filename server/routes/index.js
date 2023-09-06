@@ -19,13 +19,6 @@ userRoutes.get('/api', (req, res) => {
 
 userRoutes.get('/apipaperone', async (req, res) => {
    const sendData = { text: 'This is coming from /apps/api/paprone.' }
-   // const { client } = await clientProvider.restClient({
-   //    req,
-   //    res,
-   //    isOnline: false
-   // });
-   // const response = await client.get({ path: 'products/8331824988482' });
-   // console.log({ text: response.body.product.title });
    res.status(200).json(sendData)
 })
 

@@ -6,9 +6,6 @@ export const resetSession = async (sessionId) => {
 
    try {
       await sessionHandler.loadSession(sessionId)
-      // if (req?.sessionId) {
-      //    delete req.sessionId
-      // }
    } catch (error) {
       console.log(chalk.red(`From reset session service --> ${error}`))
    }
