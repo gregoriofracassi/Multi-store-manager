@@ -17,7 +17,6 @@ import verifyRequest from './middleware/verifyRequest.js'
 import proxyRouter from './routes/app_proxy/index.js'
 import userRoutes from './routes/index.js'
 import webhookRegistrar from './webhooks/index.js'
-import storesRouter from './routes/stores.js'
 
 setupCheck() // Run a check to ensure everything is setup properly
 
