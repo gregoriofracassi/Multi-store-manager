@@ -51,15 +51,7 @@ const sanitizeProduct = async (product, id, customSession) => {
             if (image.variant_ids && image.variant_ids.length) {
                const newVariantIds = image.variant_ids.map((variantId, ind) => {
                   const variantIndex = product.variants.findIndex((variant) => variant.id === variantId)
-                  // console.log(
-                  //    chalk.cyan(
-                  //       `Img ind.${index} is considering variant_id ind.${ind}, is assigned to variant ind.${variantIndex} in the main product`
-                  //    )
-                  // )
                   const toModVariantIds = productToModify.variants.map((variant) => variant.id)
-                  // console.log(chalk.cyan(`These are the ids of the variants of corresponding product ${id}:`))
-                  // console.dir({ toModVariantIds })
-                  // console.dir({ 'toModVariantIds[variantIndex]': toModVariantIds[variantIndex] })
                   return toModVariantIds[variantIndex]
                })
                image.variant_ids = newVariantIds
@@ -67,7 +59,6 @@ const sanitizeProduct = async (product, id, customSession) => {
          })
       }
 
-      // console.dir({productCopy}, { depth: null })
       return productCopy
    } catch (error) {
       console.log(chalk.red(`From sanitizeProduct --> ${error}`))
